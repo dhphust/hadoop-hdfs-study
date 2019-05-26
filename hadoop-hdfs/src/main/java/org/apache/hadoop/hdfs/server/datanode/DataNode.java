@@ -314,7 +314,7 @@ public class DataNode extends ReconfigurableBase
     return NetUtils.createSocketAddr(target);
   }
   
-  volatile boolean shouldRun = true;
+  volatile boolean shouldRun = true;//检查某个状态标记，判断服务是否退出循环
   volatile boolean shutdownForUpgrade = false;
   private boolean shutdownInProgress = false;
   private BlockPoolManager blockPoolManager;
@@ -1398,7 +1398,7 @@ public class DataNode extends ReconfigurableBase
     
     // global DN settings
     registerMXBean();
-    initDataXceiver();
+    initDataXceiver();//初始化流接口服务器
     startInfoServer();
     pauseMonitor = new JvmPauseMonitor();
     pauseMonitor.init(getConf());
@@ -2027,6 +2027,7 @@ public class DataNode extends ReconfigurableBase
     shutdownReconfigurationTask();
 
     // wait for all data receiver threads to exit
+    //等待所有流式接口服务线程退出
     if (this.threadGroup != null) {
       int sleepMs = 2;
       while (true) {
@@ -2621,6 +2622,7 @@ public class DataNode extends ReconfigurableBase
 
   /** Start a single datanode daemon and wait for it to finish.
    *  If this thread is specifically interrupted, it will stop waiting.
+   *  datanode的主线程
    */
   public void runDatanodeDaemon() throws IOException {
     blockPoolManager.startAll();
@@ -2720,6 +2722,7 @@ public class DataNode extends ReconfigurableBase
   
   /** Instantiate & Start a single datanode daemon and wait for it to finish.
    *  If this thread is specifically interrupted, it will stop waiting.
+   *  创建并启动datanode
    */
   @VisibleForTesting
   @InterfaceAudience.Private
@@ -2727,7 +2730,7 @@ public class DataNode extends ReconfigurableBase
       SecureResources resources) throws IOException {
     DataNode dn = instantiateDataNode(args, conf, resources);
     if (dn != null) {
-      dn.runDatanodeDaemon();
+      dn.runDatanodeDaemon();//开启datanode的主线程
     }
     return dn;
   }

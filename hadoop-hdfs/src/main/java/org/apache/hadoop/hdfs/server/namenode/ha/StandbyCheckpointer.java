@@ -144,9 +144,9 @@ public class StandbyCheckpointer {
   public void stop() throws IOException {
     cancelAndPreventCheckpoints("Stopping checkpointer");
     thread.setShouldRun(false);
-    thread.interrupt();
+    thread.interrupt();//中断checkpoint线程
     try {
-      thread.join();
+      thread.join();//checkpoint主线程等待子线程Edit log tailer正常退出
     } catch (InterruptedException e) {
       LOG.warn("Edit log tailer thread exited with an exception");
       throw new IOException(e);
